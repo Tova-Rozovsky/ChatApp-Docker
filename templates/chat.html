@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+
+</head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      function room() {
+        var room = window.location.href.substring(window.location.href.lastIndexOf("/")+1);
+        if (room=="") room = "general";
+        return "/api/chat/"+room;
+      }
+  
+      function room_delete() {
+        var room = window.location.href.substring(window.location.href.lastIndexOf("/")+1);
+        if (room=="") room = "general";
+        return "/api/chat_clear/"+room;
+      }
+
+      function updateChat() {
+        $.get(room(), function(data) {
+          $("#chatbox").text(data);
+          window.setTimeout(updateChat, 1500);
+        })
+      }
+  
+      function sendmessage() {
+        $.post(room(), $("#inform").serialize() );
+      }
+  
+      function clear_room_chat() {
+        $.post(room_delete(), $("#inform").serialize() );
+      }
+
+      $(document).ready(function() {
+        $("#chatbox").text("Loading chat...");
+        $("#sendBtn").click(sendmessage)
+        window.setTimeout(updateChat, 1500);
+      });
+  
+    </script>
+    <body>
+      <h1>Chat Room: {{ room }}</h1>
+
+         
+      <form id="inform" action="/api/chat"+room method="POST">
+        Message:<input name="msg" type=text>
+        <input id="sendBtn" type="button" value="send">
+        <input id="clear" type="button" value="clear" onclick="clear_room_chat()">
+      </form>
+      <pre id="chatbox">Loading...</pre>      
+      <br>
+      <br>
+      <a href="/lobby">Back to lobby</a>
+      <br>
+      <br>
+      <a href="/logout">logout</a>
+
+     
+      <!-- <button type="button" action="/api/clear_room"+room method="POST">clear</button> -->
+    </body>
+  </html>
+
+
+
+
+  <style>
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+form input[name="msg"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form input[type="button"] {
+  background-color: #3498db;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form input[type="button"]:hover {
+  background-color: #2980b9;
+}
+
+#chatbox {
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+#chatbox::before {
+  content: "Chat Log:";
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+a {
+  display: inline-block;
+  margin: 10px;
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #2980b9;
+}
+  </style>
