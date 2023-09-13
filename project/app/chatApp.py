@@ -7,6 +7,25 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+
+def favorite_colors() -> List[Dict]:
+    config = {
+        'user': 'root',
+        'password': 'root',
+        'host': 'db',
+        'port': '3306',
+        'database': 'chat-app-db'
+    }
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM favorite_colors')
+    results = [{name: color} for (name, color) in cursor]
+    cursor.close()
+    connection.close()
+
+    return results
+
+
 app.secret_key = '1234' 
 # app.config['SESSION_COOKIE_SECURE'] = False 
 @app.route('/logout')

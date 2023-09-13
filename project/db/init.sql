@@ -2,13 +2,13 @@ CREATE DATABASE chat-app-db;
 use chat-app-db;
 
 CREATE TABLE rooms (
-  ID int NOT NULL,
+  ID int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   PRIMARY KEY (ID)
 );
 
 CREATE TABLE users (
-  ID int NOT NULL,
+  ID int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   password varchar NOT NULL,
   PRIMARY KEY (ID)
