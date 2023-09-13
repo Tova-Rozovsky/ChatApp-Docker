@@ -1,6 +1,5 @@
 # set base image (host OS)
 FROM python:3.8-slim-buster
-
 # set the working directory in the container
 WORKDIR /code
 # command to run on development inviroment
@@ -11,6 +10,7 @@ ENV ROOMS_FILES_PATH rooms/
 COPY requirements.txt .
 # install dependencies
 RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
+RUN  pip install  Flask-SQLAlchemy
 # copy the content of the local src directory to the working directory
 COPY / .
 #publish on port 5000
