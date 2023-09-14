@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
+import mysql.connector
 import csv
 import os
 import base64
@@ -7,23 +8,25 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+def start():
 
-def favorite_colors() -> List[Dict]:
     config = {
         'user': 'root',
         'password': 'root',
         'host': 'db',
         'port': '3306',
-        'database': 'chat-app-db'
+        'database': 'chat'
     }
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM favorite_colors')
-    results = [{name: color} for (name, color) in cursor]
+
+    #results = cursor.execute('SELECT * FROM msg')
     cursor.close()
     connection.close()
+    #print(results)
+    return #results
 
-    return results
+
 
 
 app.secret_key = '1234' 
@@ -44,6 +47,7 @@ def decode_password(encoded_password):
 
 @app.route('/', methods=['GET', 'POST'])
 def register():
+    start()
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -61,6 +65,7 @@ def register():
         return redirect("/lobby") 
 
     return render_template('register.html')
+
 
 def verify(username,password):
      with open('users.csv', 'r', newline='') as f: 

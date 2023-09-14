@@ -1,7 +1,7 @@
-version: "2"
+version: '3.8'
 services:
   app:
-    build: ./app
+    build: ./app/
     links:
       - db
     ports:
@@ -9,9 +9,32 @@ services:
 
   db:
     image: mysql:5.7
+    restart: always
     ports:
       - "32000:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - ./db:/docker-entrypoint-initdb.d/:ro
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+#  version: '3.8'
+# services:  
+#   mysql:
+#     image: mysql
+#     restart: always
+#     environment:  
+#        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#        MYSQL_DATABASE: ${MYSQL_DATABASE}
+#        MYSQL_USER: ${MYSQL_USER}
+#        MYSQL_ALLOW_EMPTY_PASSWORD: ${MYSQL_ALLOW_EMPTY_PASSWORD}
+#     ports:
+#       - "3306:3306"  
+#     volumes:
+#       - ./Database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+#   chatapp:
+#     build: ./app/
+#     ports:
+#       - 5000:5000 
+#     depends_on: 
+#       - mysql
