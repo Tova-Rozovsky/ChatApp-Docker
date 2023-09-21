@@ -1,7 +1,9 @@
 version: '3.8'
 services:
   app:
-    build: ./app/
+    build: ./app
+    environment:
+      MYSQL_HOST: db 
     links:
       - db
     ports:

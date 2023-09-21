@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 import mysql.connector
+
+
 import csv
 import os
 import base64
@@ -10,21 +12,21 @@ app = Flask(__name__)
 
 def start():
 
-    config = {
-        'user': 'root',
-        'password': 'root',
-        'host': 'db',
-        'port': '3306',
-        'database': 'chat'
-    }
-    connection = mysql.connector.connect(**config)
-    cursor = connection.cursor()
 
-    #results = cursor.execute('SELECT * FROM msg')
-    cursor.close()
-    connection.close()
-    #print(results)
-    return #results
+   db = mysql.connector.connect(
+      user="root",  # שם השירות ברשת הפנימית של Docker Compose
+      password="root",      # שם המשתמש
+      host="db",  # הסיסמה שהוגדרה בdocker-compose.yml
+      port="3306" ,   # שם מסד הנתונים
+      database = 'chat'
+    )
+   cursor = db.cursor(buffered=True)
+
+   results = cursor.execute('SELECT * FROM Persons')
+   cursor.close()
+   db.close()
+   
+   return results
 
 
 
@@ -47,7 +49,6 @@ def decode_password(encoded_password):
 
 @app.route('/', methods=['GET', 'POST'])
 def register():
-    start()
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -114,12 +115,14 @@ def lobby():
 @app.route('/api/chat/<room>', methods=['GET', 'POST'])
 def render_chat(room):
     path=os.getenv('ROOMS_FILES_PATH')+room+".txt"
+    tova = start()
+    print(tova)
     if request.method == "POST":
         msg = request.form['msg']
         current_user = session['username']
         current_d_t = datetime.now()
         with open(path, "a") as file:
-            file.write(f'[{current_d_t:%Y-%m-%d %H:%M:%S}] {current_user}: {msg}\n')
+            file.write(f'[{current_d_t:%Y-%m-%d %H:%M:%S}] {current_user}: {msg} \n')
     with open(path, "r") as file:
         file.seek(0)
         lines = file.read()
