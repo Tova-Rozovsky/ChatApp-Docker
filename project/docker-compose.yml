@@ -3,12 +3,10 @@ services:
   app:
     build: ./app
     environment:
-      MYSQL_HOST: db 
-    links:
-      - db
+      MYSQL_HOST: localhost  
     ports:
       - "5000:5000"
-
+      
   db:
     image: mysql:5.7
     restart: always

@@ -10,25 +10,49 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+
+
+
 def start():
+    config = {
+        'user': 'root',
+        'password': 'root',
+        'host': 'db',
+        'port': 3306,
+        'database': 'chat'
+    }
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor()
+    cursor.execute('SELECT FirstName from Persons')
+    results = cursor.fetchall() 
+    cursor.close()
+    connection.close()
+    return results
+# def start():
+#    db =  mysql.connector.connect(
+#    host="localhost",
+#    port=32000,
+#    user="root",
+#    password="root",
 
-
-   db = mysql.connector.connect(
-      user="root",  # שם השירות ברשת הפנימית של Docker Compose
-      password="root",      # שם המשתמש
-      host="db",  # הסיסמה שהוגדרה בdocker-compose.yml
-      port="3306" ,   # שם מסד הנתונים
-      database = 'chat'
-    )
-   cursor = db.cursor(buffered=True)
-
-   results = cursor.execute('SELECT * FROM Persons')
-   cursor.close()
-   db.close()
+# )
+#    cursor = db.cursor(buffered=True)
+#    results = cursor.execute('SELECT LastName FROM Persons')
+#    cursor.close()
+#    db.close()
    
-   return results
+#    return results
 
 
+# # יצירת חיבור והגדרת SSL
+# connection = mysql.connector.connect(
+#    host="localhost",
+#    port=32000,
+#    user="root",
+#    password="root",
+#    ssl_disabled = False,  # הפעל חיבור מאובטח
+#    ssl_version = "TLSv1.2"  # בחר TLSv1.2 או גרסה גבוהה יותר
+# )
 
 
 app.secret_key = '1234' 
@@ -79,6 +103,7 @@ def verify(username,password):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    
      if request.method== 'POST':
       username= request.form['username']
       password=request.form['password']
@@ -89,7 +114,7 @@ def login():
     
 
 def room_is_exists(new_room):
-    if os.path.exists(new_room +".txt"):
+    if os.path.exists(str(new_room) +".txt"):
        return True
     return False
 
@@ -97,12 +122,15 @@ def room_is_exists(new_room):
 def lobby():
  if session.get('username'):
     if request.method== 'POST':
-        new_room=request.form['new_room']
+        new_room = request.form['new_room']
+        new_room = start()
+        new_room = new_room[0]
+        print(new_room)
         if room_is_exists(new_room):
            print("the room is already exists")
            return redirect('/lobby')   
         else:
-          f= open("rooms/"+new_room +".txt","w+")
+         f= open("rooms/"+str(new_room) +".txt","w+")
     rooms =os.listdir('rooms')    
     for i in range(len(rooms)):
       rooms[i] = rooms[i][:-4]
@@ -115,8 +143,6 @@ def lobby():
 @app.route('/api/chat/<room>', methods=['GET', 'POST'])
 def render_chat(room):
     path=os.getenv('ROOMS_FILES_PATH')+room+".txt"
-    tova = start()
-    print(tova)
     if request.method == "POST":
         msg = request.form['msg']
         current_user = session['username']
