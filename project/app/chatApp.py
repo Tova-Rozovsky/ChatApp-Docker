@@ -10,7 +10,15 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-
+config = {
+        'user': 'root',
+        'password': 'root',
+        'host': 'db',
+        'port': 3306,
+        'database': 'chat'
+    }
+connection = mysql.connector.connect(**config)
+cursor = connection.cursor()
 
 
 def start():
@@ -123,7 +131,8 @@ def lobby():
  if session.get('username'):
     if request.method== 'POST':
         new_room = request.form['new_room']
-        new_room = start()
+        cursor.execute('SELECT  City from Persons')
+        new_room = cursor.fetchall()
         new_room = new_room[0]
         print(new_room)
         if room_is_exists(new_room):
