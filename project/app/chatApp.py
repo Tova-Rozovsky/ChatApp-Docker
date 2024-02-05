@@ -23,7 +23,7 @@ def start():
     }
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
-    cursor.execute('SELECT FirstName from Persons')
+    cursor.execute('SELECT  City from Persons')
     results = cursor.fetchall() 
     cursor.close()
     connection.close()
